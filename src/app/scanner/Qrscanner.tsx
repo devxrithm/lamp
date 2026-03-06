@@ -3,65 +3,74 @@
 import { Toaster } from "@/components/ui/sonner"
 import { toast } from "sonner"
 import { useEffect, useRef, useState } from "react"
-import { Html5QrcodeScanner } from "html5-qrcode"
+import { Html5Qrcode } from "html5-qrcode" // ✅ Use class directly, not Scanner
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import team from "../../team.json"
 
 export default function QRScanner() {
-
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null)
+  const scannerRef = useRef<Html5Qrcode | null>(null)
 
   const [result, setResult] = useState("")
   const [scanning, setScanning] = useState(false)
+  const [permissionError, setPermissionError] = useState("")
 
-  const startScanner = () => {
-    if (scannerRef.current) return
+  const startScanner = async () => {
+    setPermissionError("")
 
-    const scanner = new Html5QrcodeScanner(
-      "qr-reader",
-      {
-        fps: 10,
-        qrbox: 250
-      },
-      false
-    )
+    // ✅ Explicitly request camera permission FIRST — this is what fixes Vercel/HTTPS
+    try {
+      await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+    } catch (err: any) {
+      setPermissionError(
+        err.name === "NotAllowedError"
+          ? "Camera permission denied. Please allow access in browser settings."
+          : "Camera unavailable: " + err.message
+      )
+      return
+    }
 
-    scanner.render(
-      (decodedText) => {
+    try {
+      // ✅ Use Html5Qrcode class directly (not Html5QrcodeScanner)
+      // Html5QrcodeScanner creates its own UI and has permission issues in prod
+      const html5QrCode = new Html5Qrcode("qr-reader")
+      scannerRef.current = html5QrCode
 
-        setResult(decodedText)
+      await html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          setResult(decodedText)
+          stopScanner()
+        },
+        (error) => console.warn(error)
+      )
 
-        scanner.clear()
-        scannerRef.current = null
-        setScanning(false)
-
-      },
-      (error) => {
-        console.warn(error)
-      }
-    )
-
-    scannerRef.current = scanner
-    setScanning(true)
+      setScanning(true)
+    } catch (err: any) {
+      setPermissionError("Failed to start scanner: " + err.message)
+    }
   }
 
   const stopScanner = async () => {
     if (scannerRef.current) {
-      await scannerRef.current.clear()
+      try {
+        await scannerRef.current.stop()
+        scannerRef.current.clear()
+      } catch (e) {
+        console.warn(e)
+      }
       scannerRef.current = null
-      setScanning(false)
     }
+    setScanning(false)
   }
 
-  // ✅ Reset for new scan
-  const scanNewUser = () => {
+  const scanNewUser = async () => {
     setResult("")
-    startScanner()
+    await startScanner()
   }
 
   useEffect(() => {
-
     if (!result) return
 
     const verifiedUser = team.participants.find(
@@ -73,13 +82,12 @@ export default function QRScanner() {
     } else {
       toast.error("USER NOT VERIFIED")
     }
-
   }, [result])
 
   useEffect(() => {
     return () => {
       if (scannerRef.current) {
-        scannerRef.current.clear()
+        scannerRef.current.stop().catch(() => {}).then(() => scannerRef.current?.clear())
       }
     }
   }, [])
@@ -91,55 +99,58 @@ export default function QRScanner() {
       <div className="absolute top-0 mb-16">
         <Toaster />
       </div>
+
       <h1 className="text-xl font-bold text-center">
         SCAN THE QR CODE AND VERIFY THE PARTICIPANT
       </h1>
 
       <Card className="w-full max-w-xl mx-auto mt-10 bg-black">
         <CardContent className="space-y-4 p-6">
-
           <h2 className="text-xl font-semibold text-center text-gray-100">
             QR Code Scanner
           </h2>
 
+          {/* ✅ Plain div — Html5Qrcode mounts the video feed here itself */}
           <div
             id="qr-reader"
-            className="w-full border border-green-500 p-20 rounded-lg overflow-hidden"
+            className="w-full border border-green-500 rounded-lg overflow-hidden"
           />
 
+          {!scanning && !result && (
+            <div className="w-full h-16 flex items-center justify-center text-gray-400 text-sm">
+              Press "Start Scan" to activate camera
+            </div>
+          )}
+
+          {/* ✅ Show permission/camera errors to the user */}
+          {permissionError && (
+            <div className="p-3 bg-red-100 rounded text-center">
+              <p className="text-red-700 text-sm">{permissionError}</p>
+            </div>
+          )}
+
           <div className="flex gap-4 justify-center">
-
             {!scanning && !result && (
-              <Button onClick={startScanner}>
-                Start Scan
-              </Button>
+              <Button onClick={startScanner}>Start Scan</Button>
             )}
-
             {scanning && (
               <Button variant="destructive" onClick={stopScanner}>
                 Stop Scan
               </Button>
             )}
-
             {result && (
               <Button onClick={scanNewUser} className="bg-green-500">
                 Scan New User
               </Button>
             )}
-
           </div>
 
           {result && (
             <div className="p-3 bg-green-100 rounded text-center">
-              <p className="text-sm font-medium">
-                Scanned Result:
-              </p>
-              <p className="text-green-700 break-all">
-                {result}
-              </p>
+              <p className="text-sm font-medium">Scanned Result:</p>
+              <p className="text-green-700 break-all">{result}</p>
             </div>
           )}
-
         </CardContent>
       </Card>
     </div>
