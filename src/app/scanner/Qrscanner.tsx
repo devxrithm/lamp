@@ -3,7 +3,7 @@
 import { Toaster } from "@/components/ui/sonner"
 import { toast } from "sonner"
 import { useEffect, useRef, useState } from "react"
-import { Html5Qrcode } from "html5-qrcode" // ✅ Use class directly, not Scanner
+import { Html5Qrcode } from "html5-qrcode"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import team from "../../team.json"
@@ -17,8 +17,6 @@ export default function QRScanner() {
 
   const startScanner = async () => {
     setPermissionError("")
-
-    // ✅ Explicitly request camera permission FIRST — this is what fixes Vercel/HTTPS
     try {
       await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
     } catch (err: any) {
@@ -31,14 +29,15 @@ export default function QRScanner() {
     }
 
     try {
-      // ✅ Use Html5Qrcode class directly (not Html5QrcodeScanner)
-      // Html5QrcodeScanner creates its own UI and has permission issues in prod
       const html5QrCode = new Html5Qrcode("qr-reader")
       scannerRef.current = html5QrCode
 
+      // ✅ Responsive qrbox — 70% of screen width, max 300px
+      const qrboxSize = Math.min(Math.floor(window.innerWidth * 0.7), 300)
+
       await html5QrCode.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        { fps: 10, qrbox: { width: qrboxSize, height: qrboxSize } },
         (decodedText) => {
           setResult(decodedText)
           stopScanner()
@@ -93,53 +92,55 @@ export default function QRScanner() {
   }, [])
 
   return (
-    <div className="flex font-sans w-full justify-center items-center flex-col bg-green-100 min-h-screen">
-      <h1 className="text-5xl font-bold">MIND INSTALLERS HACKATHON 4.0</h1>
+    <div className="flex font-sans w-full justify-center items-center flex-col bg-green-100 min-h-screen px-4 py-8 gap-3">
 
-      <div className="absolute top-0 mb-16">
-        <Toaster />
-      </div>
+      <Toaster />
 
-      <h1 className="text-xl font-bold text-center">
-        SCAN THE QR CODE AND VERIFY THE PARTICIPANT
+      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-center leading-tight">
+        MIND INSTALLERS HACKATHON 4.0
       </h1>
 
-      <Card className="w-full max-w-xl mx-auto mt-10 bg-black">
-        <CardContent className="space-y-4 p-6">
-          <h2 className="text-xl font-semibold text-center text-gray-100">
+      <p className="text-sm sm:text-base lg:text-xl font-bold text-center">
+        SCAN THE QR CODE AND VERIFY THE PARTICIPANT
+      </p>
+
+      <Card className="w-full max-w-sm sm:max-w-md lg:max-w-xl bg-black">
+        <CardContent className="space-y-4 p-4 sm:p-6">
+
+          <h2 className="text-base sm:text-xl font-semibold text-center text-gray-100">
             QR Code Scanner
           </h2>
 
-          {/* ✅ Plain div — Html5Qrcode mounts the video feed here itself */}
           <div
             id="qr-reader"
             className="w-full border border-green-500 rounded-lg overflow-hidden"
           />
 
           {!scanning && !result && (
-            <div className="w-full h-16 flex items-center justify-center text-gray-400 text-sm">
+            <div className="w-full h-12 sm:h-16 flex items-center justify-center text-gray-400 text-xs sm:text-sm">
               Press "Start Scan" to activate camera
             </div>
           )}
 
-          {/* ✅ Show permission/camera errors to the user */}
           {permissionError && (
             <div className="p-3 bg-red-100 rounded text-center">
-              <p className="text-red-700 text-sm">{permissionError}</p>
+              <p className="text-red-700 text-xs sm:text-sm">{permissionError}</p>
             </div>
           )}
 
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-3 justify-center">
             {!scanning && !result && (
-              <Button onClick={startScanner}>Start Scan</Button>
+              <Button className="text-sm sm:text-base px-4 sm:px-6" onClick={startScanner}>
+                Start Scan
+              </Button>
             )}
             {scanning && (
-              <Button variant="destructive" onClick={stopScanner}>
+              <Button variant="destructive" className="text-sm sm:text-base px-4 sm:px-6" onClick={stopScanner}>
                 Stop Scan
               </Button>
             )}
             {result && (
-              <Button onClick={scanNewUser} className="bg-green-500">
+              <Button onClick={scanNewUser} className="bg-green-500 text-sm sm:text-base px-4 sm:px-6">
                 Scan New User
               </Button>
             )}
@@ -147,10 +148,11 @@ export default function QRScanner() {
 
           {result && (
             <div className="p-3 bg-green-100 rounded text-center">
-              <p className="text-sm font-medium">Scanned Result:</p>
-              <p className="text-green-700 break-all">{result}</p>
+              <p className="text-xs sm:text-sm font-medium">Scanned Result:</p>
+              <p className="text-green-700 break-all text-sm sm:text-base">{result}</p>
             </div>
           )}
+
         </CardContent>
       </Card>
     </div>
