@@ -1,65 +1,145 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { Toaster } from "@/components/ui/sonner"
+import { toast } from "sonner"
+import { useEffect, useRef, useState } from "react"
+import { Html5QrcodeScanner } from "html5-qrcode"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import team from "../team.json"
+
+export default function QRScanner() {
+
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null)
+
+  const [result, setResult] = useState("")
+  const [scanning, setScanning] = useState(false)
+
+  const startScanner = () => {
+    if (scannerRef.current) return
+
+    const scanner = new Html5QrcodeScanner(
+      "qr-reader",
+      {
+        fps: 10,
+        qrbox: 250
+      },
+      false
+    )
+
+    scanner.render(
+      (decodedText) => {
+
+        setResult(decodedText)
+
+        scanner.clear()
+        scannerRef.current = null
+        setScanning(false)
+
+      },
+      (error) => {
+        console.warn(error)
+      }
+    )
+
+    scannerRef.current = scanner
+    setScanning(true)
+  }
+
+  const stopScanner = async () => {
+    if (scannerRef.current) {
+      await scannerRef.current.clear()
+      scannerRef.current = null
+      setScanning(false)
+    }
+  }
+
+  // ✅ Reset for new scan
+  const scanNewUser = () => {
+    setResult("")
+    startScanner()
+  }
+
+  useEffect(() => {
+
+    if (!result) return
+
+    const verifiedUser = team.participants.find(
+      (data: any) => data.name.toUpperCase() === result.toUpperCase()
+    )
+
+    if (verifiedUser) {
+      toast.success("USER SUCCESSFULLY VERIFIED")
+    } else {
+      toast.error("USER NOT VERIFIED")
+    }
+
+  }, [result])
+
+  useEffect(() => {
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear()
+      }
+    }
+  }, [])
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="flex font-sans w-full justify-center items-center flex-col bg-green-100 min-h-screen">
+
+      <Toaster />
+
+      <h1 className="text-3xl font-bold text-center mt-10">
+        SCAN THE QR CODE AND VERIFY THE PARTICIPANT
+      </h1>
+
+      <Card className="w-full max-w-xl mx-auto mt-10 bg-black">
+        <CardContent className="space-y-4 p-6">
+
+          <h2 className="text-xl font-semibold text-center text-gray-100">
+            QR Code Scanner
+          </h2>
+
+          <div
+            id="qr-reader"
+            className="w-full border border-green-500 p-10 rounded-lg overflow-hidden"
+          />
+
+          <div className="flex gap-4 justify-center">
+
+            {!scanning && !result && (
+              <Button onClick={startScanner}>
+                Start Scan
+              </Button>
+            )}
+
+            {scanning && (
+              <Button variant="destructive" onClick={stopScanner}>
+                Stop Scan
+              </Button>
+            )}
+
+            {result && (
+              <Button onClick={scanNewUser} className="bg-green-500">
+                Scan New User
+              </Button>
+            )}
+
+          </div>
+
+          {result && (
+            <div className="p-3 bg-green-100 rounded text-center">
+              <p className="text-sm font-medium">
+                Scanned Result:
+              </p>
+              <p className="text-green-700 break-all">
+                {result}
+              </p>
+            </div>
+          )}
+
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }
