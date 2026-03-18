@@ -17,23 +17,29 @@ import { CheckCircle2 } from "lucide-react";
 
 const criteria = [
   { id: "innovation", label: "Innovation", max: 25 },
-  { id: "execution", label: "Execution", max: 25 },
   { id: "impact", label: "Impact & Feasibility", max: 25 },
   { id: "presentation", label: "Presentation", max: 25 },
+  { id: "technicalComplexity", label: "Technical Complexity", max: 25 },
+  { id: "functionality", label: "Functionality", max: 25 },
+  { id: "problemRelevance", label: "Problem Relevance", max: 25 },
+  { id: "feasibility", label: "Feasibility", max: 25 },
 ];
 
 export default function UploadMarksForm() {
   const [scores, setScores] = useState<Record<string, number>>({
     innovation: 0,
-    execution: 0,
     impact: 0,
     presentation: 0,
+    technicalComplexity:0,
+    functionality:0,
+    problemRelevance:0,
+    feasibility:0
   });
   const [submitted, setSubmitted] = useState(false);
 
   const total = Object.values(scores).reduce((a, b) => a + b, 0);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e:React.SubmitEvent) => {
     e.preventDefault();
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 3000);
