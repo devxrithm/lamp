@@ -92,12 +92,12 @@ export default function QRScanner() {
   }, [])
 
   return (
-    <div className="flex font-sans w-full justify-center items-center flex-col bg-green-100 min-h-screen px-4 py-8 gap-3">
+    <div className="text-white flex font-sans w-full justify-center items-center flex-col min-h-screen px-4 py-8 gap-3">
 
       <Toaster />
 
-      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-center leading-tight">
-        MIND INSTALLERS HACKATHON 4.0
+      <h1 className=" border border-green-500 px-10 py-2 text-2xl sm:text-4xl lg:text-5xl font-bold text-left rounded-full leading-tight">
+        MIND INSTALLERS HACKATHON <span className="text-red-500">4.0</span>
       </h1>
 
       <p className="text-sm sm:text-base lg:text-xl font-bold text-center">
