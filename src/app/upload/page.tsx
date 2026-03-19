@@ -17,13 +17,13 @@ import { CheckCircle2 } from "lucide-react";
 import TopBar from "../result/page";
 
 const criteria = [
-    { id: "innovation", label: "Innovation", max: 25 },
-    { id: "impact", label: "Impact & Feasibility", max: 25 },
-    { id: "presentation", label: "Presentation", max: 25 },
-    { id: "technicalComplexity", label: "Technical Complexity", max: 25 },
-    { id: "functionality", label: "Functionality", max: 25 },
-    { id: "problemRelevance", label: "Problem Relevance", max: 25 },
-    { id: "feasibility", label: "Feasibility", max: 25 },
+    { id: "innovation", label: "Innovation", max: 10 },
+    { id: "impact", label: "Impact & Feasibility", max: 10 },
+    { id: "presentation", label: "Presentation", max: 10 },
+    { id: "technicalComplexity", label: "Technical Complexity", max: 10 },
+    { id: "functionality", label: "Functionality", max: 10 },
+    { id: "problemRelevance", label: "Problem Relevance", max: 10 },
+    { id: "feasibility", label: "Feasibility", max: 10 },
 ];
 
 export default function UploadMarksForm() {
@@ -149,14 +149,12 @@ export default function UploadMarksForm() {
                     <div className="flex items-center justify-between rounded-lg bg-muted px-4 py-3">
                         <span className="font-semibold text-sm">Total Score</span>
                         <span
-                            className={`text-2xl font-bold tabular-nums ${total >= 80
+                            className={`text-2xl font-bold tabular-nums ${total >= 35
                                     ? "text-green-600"
-                                    : total >= 60
-                                        ? "text-yellow-600"
-                                        : "text-red-500"
+                                    :  "text-yellow-600"
                                 }`}
                         >
-                            {total} / 100
+                            {total} / 70
                         </span>
                     </div>
 
