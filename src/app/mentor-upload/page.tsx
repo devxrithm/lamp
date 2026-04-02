@@ -12,38 +12,81 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const criteria = [
-    { id: "innovation", label: "Innovation Marks", max: 10 },
-    { id: "impact", label: "Impact & Feasibility", max: 10 },
-    { id: "presentation", label: "Presentation", max: 10 },
+    { id: "innovationMarks", label: "Innovation Marks", max: 10 },
     { id: "technicalComplexity", label: "Technical Complexity", max: 10 },
+    { id: "presentation", label: "Presentation", max: 10 },
     { id: "marketFeasibility", label: "Market Feasibility", max: 10 },
+    { id: "futureScope", label: "Future Scope", max: 10 },
 ];
 
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export default function UploadMarksForm() {
     const [scores, setScores] = useState<Record<string, number>>({
-        innovation: 0,
-        impact: 0,
-        presentation: 0,
+        innovationMarks: 0,
         technicalComplexity: 0,
-        functionality: 0,
-        problemRelevance: 0,
-        marketFeasibility: 0
+        presentation: 0,
+        marketFeasibility: 0,
+        futureScope: 0,
     });
 
-    const [teamName, setTeamName] = useState("")
+    const [teamName, setTeamName] = useState("");
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const total = Object.values(scores).reduce((a, b) => a + b, 0);
 
-    const handleSubmit = (e: React.SubmitEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
+        setError("");
+        setLoading(true);
+
+        try {
+            const token = localStorage.getItem("auth_token"); // Assuming token is stored here
+            if (!token) {
+                throw new Error("You must be logged in to upload marks.");
+            }
+
+            const response = await fetch("/api/mentor-online", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
+                },
+                body: JSON.stringify({
+                    teamName,
+                    ...scores
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to upload marks.");
+            }
+
+            setSubmitted(true);
+            setTimeout(() => {
+                setSubmitted(false);
+                setTeamName("");
+                setScores({
+                    innovationMarks: 0,
+                    technicalComplexity: 0,
+                    presentation: 0,
+                    marketFeasibility: 0,
+                    futureScope: 0,
+                });
+            }, 3000);
+        } catch (err: any) {
+            setError(err.message || "An unexpected error occurred.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (submitted) {
@@ -65,16 +108,21 @@ export default function UploadMarksForm() {
 
     return (
         <ProtectedRoute>
-            {/* <TopBar/> */}
             <Card>
                 <CardHeader>
                     <CardTitle>Score Entry Form</CardTitle>
                     <CardDescription>
-                        Fill in scores for each judging criterion. Total is out of 100.
+                        Fill in scores for each judging criterion. Total is out of 50.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {error && (
+                            <Alert variant="destructive" className="py-2.5">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertDescription className="ml-2 text-sm">{error}</AlertDescription>
+                            </Alert>
+                        )}
                         <div className="space-y-2">
                             <Label htmlFor="round">Round</Label>
                             <Select defaultValue="online">
@@ -91,12 +139,13 @@ export default function UploadMarksForm() {
                             <div className="space-y-2">
                                 <Label htmlFor="team">Team</Label>
                                 <Input
-                                    type="string"
+                                    type="text"
                                     value={teamName}
                                     onChange={(e) => {
                                         setTeamName(e.target.value)
                                     }}
                                     placeholder="Enter Team Name"
+                                    required
                                 />
                             </div>
                         </div>
@@ -123,6 +172,7 @@ export default function UploadMarksForm() {
                                                     min={0}
                                                     max={c.max}
                                                     value={val}
+                                                    required
                                                     onChange={(e) => {
                                                         const num = Math.max(0, Math.min(c.max, Number(e.target.value)));
                                                         setScores((prev) => ({ ...prev, [c.id]: num }));
@@ -152,19 +202,15 @@ export default function UploadMarksForm() {
                             </span>
                         </div>
 
-                        {/* Feedback
-                    <div className="space-y-2">
-                        <Label htmlFor="feedback">Judge Feedback (optional)</Label>
-                        <Textarea
-                            id="feedback"
-                            placeholder="Add notes or feedback for this team..."
-                            className="resize-none"
-                            rows={3}
-                        />
-                    </div> */}
-
-                        <Button type="submit" className="w-full">
-                            Submit Marks
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Submitting...
+                                </>
+                            ) : (
+                                "Submit Marks"
+                            )}
                         </Button>
                     </form>
                 </CardContent>

@@ -13,39 +13,93 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { CheckCircle2 } from "lucide-react";
-import TopBar from "../result/page";
+import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const criteria = [
-    { id: "innovation", label: "Innovation", max: 10 },
-    { id: "impact", label: "Impact & Feasibility", max: 10 },
-    { id: "presentation", label: "Presentation", max: 10 },
+    { id: "innovationMarks", label: "Innovation Marks", max: 10 },
     { id: "technicalComplexity", label: "Technical Complexity", max: 10 },
-    { id: "functionality", label: "Functionality", max: 10 },
-    { id: "problemRelevance", label: "Problem Relevance", max: 10 },
-    { id: "feasibility", label: "Feasibility", max: 10 },
+    { id: "presentation", label: "Presentation", max: 10 },
+    { id: "marketFeasibility", label: "Market Feasibility", max: 10 },
+    { id: "futureScope", label: "Future Scope", max: 10 },
 ];
 
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export default function UploadMarksForm() {
     const [scores, setScores] = useState<Record<string, number>>({
-        innovation: 0,
-        impact: 0,
-        presentation: 0,
+        innovationMarks: 0,
         technicalComplexity: 0,
-        functionality: 0,
-        problemRelevance: 0,
-        feasibility: 0
+        presentation: 0,
+        marketFeasibility: 0,
+        futureScope: 0,
     });
+    const [teamName, setTeamName] = useState("");
+    const [round, setRound] = useState("final");
+    const [feedback, setFeedback] = useState("");
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const total = Object.values(scores).reduce((a, b) => a + b, 0);
 
-    const handleSubmit = (e: React.SubmitEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSubmitted(true);
-        setTimeout(() => setSubmitted(false), 3000);
+        setError("");
+        setLoading(true);
+
+        if (!teamName) {
+            setError("Please select a team.");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("auth_token"); // Assuming token is stored here
+            if (!token) {
+                throw new Error("You must be logged in to upload marks.");
+            }
+
+            // Generate a random team ID for offline round as placeholder Since it expects an integer
+            const teamId = Math.floor(Math.random() * 10000);
+
+            const response = await fetch("/api/jury", {
+                method: "POST",
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}` 
+                },
+                body: JSON.stringify({
+                    teamId,
+                    teamName,
+                    ...scores
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to upload marks.");
+            }
+
+            setSubmitted(true);
+            setTimeout(() => {
+                setSubmitted(false);
+                setTeamName("");
+                setFeedback("");
+                setScores({
+                    innovationMarks: 0,
+                    technicalComplexity: 0,
+                    presentation: 0,
+                    marketFeasibility: 0,
+                    futureScope: 0,
+                });
+            }, 3000);
+        } catch (err: any) {
+            setError(err.message || "An unexpected error occurred.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (submitted) {
@@ -72,16 +126,22 @@ export default function UploadMarksForm() {
             <CardHeader>
                 <CardTitle>Score Entry Form</CardTitle>
                 <CardDescription>
-                    Fill in scores for each judging criterion. Total is out of 100.
+                    Fill in scores for each judging criterion. Total is out of 50.
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {error && (
+                        <Alert variant="destructive" className="py-2.5">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription className="ml-2 text-sm">{error}</AlertDescription>
+                        </Alert>
+                    )}
                     {/* Team selection */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="team">Team</Label>
-                            <Select required>
+                            <Select required value={teamName} onValueChange={setTeamName}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select team" />
                                 </SelectTrigger>
@@ -96,7 +156,7 @@ export default function UploadMarksForm() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="round">Round</Label>
-                            <Select defaultValue="final">
+                            <Select value={round} onValueChange={setRound}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select round" />
                                 </SelectTrigger>
@@ -130,6 +190,7 @@ export default function UploadMarksForm() {
                                                 type="number"
                                                 min={0}
                                                 max={c.max}
+                                                required
                                                 value={val}
                                                 onChange={(e) => {
                                                     const num = Math.max(0, Math.min(c.max, Number(e.target.value)));
@@ -151,12 +212,12 @@ export default function UploadMarksForm() {
                     <div className="flex items-center justify-between rounded-lg bg-muted px-4 py-3">
                         <span className="font-semibold text-sm">Total Score</span>
                         <span
-                            className={`text-2xl font-bold tabular-nums ${total >= 35
+                            className={`text-2xl font-bold tabular-nums ${total >= 30
                                     ? "text-green-600"
                                     :  "text-yellow-600"
                                 }`}
                         >
-                            {total} / 70
+                            {total} / 50
                         </span>
                     </div>
 
@@ -168,11 +229,20 @@ export default function UploadMarksForm() {
                             placeholder="Add notes or feedback for this team..."
                             className="resize-none"
                             rows={3}
+                            value={feedback}
+                            onChange={(e) => setFeedback(e.target.value)}
                         />
                     </div>
 
-                    <Button type="submit" className="w-full">
-                        Submit Marks
+                    <Button type="submit" className="w-full" disabled={loading}>
+                        {loading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Submitting...
+                            </>
+                        ) : (
+                            "Submit Marks"
+                        )}
                     </Button>
                 </form>
             </CardContent>
