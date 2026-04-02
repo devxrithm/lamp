@@ -22,6 +22,8 @@ const criteria = [
     { id: "marketFeasibility", label: "Market Feasibility", max: 10 },
 ];
 
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+
 export default function UploadMarksForm() {
     const [scores, setScores] = useState<Record<string, number>>({
         innovation: 0,
@@ -46,7 +48,7 @@ export default function UploadMarksForm() {
 
     if (submitted) {
         return (
-            <>
+            <ProtectedRoute>
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-16 gap-4">
                         <CheckCircle2 className="h-12 w-12 text-green-500" />
@@ -57,12 +59,12 @@ export default function UploadMarksForm() {
                         </Button>
                     </CardContent>
                 </Card>
-            </>
+            </ProtectedRoute>
         );
     }
 
     return (
-        <>
+        <ProtectedRoute>
             {/* <TopBar/> */}
             <Card>
                 <CardHeader>
@@ -167,6 +169,6 @@ export default function UploadMarksForm() {
                     </form>
                 </CardContent>
             </Card>
-        </>
+        </ProtectedRoute>
     );
 }
