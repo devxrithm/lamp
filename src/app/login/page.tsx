@@ -103,14 +103,14 @@ export default function Login() {
             </Button>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4 pt-0">
+        {/* <CardFooter className="flex flex-col space-y-4 pt-0">
           <div className="text-sm text-center text-muted-foreground w-full">
             Don&apos;t have an account?{" "}
             <Link href="/signup" className="text-primary font-medium hover:underline">
               Sign up
             </Link>
           </div>
-        </CardFooter>
+        </CardFooter> */}
       </Card>
     </div>
   );
