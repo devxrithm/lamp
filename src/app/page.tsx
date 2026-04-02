@@ -119,7 +119,7 @@ export default function Home() {
               </p>
             </button>
           </Link>
-          <Link href={'/upload'}>
+          {/* <Link href={'/upload'}>
             <button className="group relative text-left rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 overflow-hidden
             hover:border-[#00ff8844] hover:bg-[#00ff8806] transition-all duration-300 cursor-pointer">
 
@@ -145,7 +145,7 @@ export default function Home() {
                 Submit and manage participant assessment data securely.
               </p>
             </button>
-          </Link>
+          </Link> */}
         </div>
       </main>
 

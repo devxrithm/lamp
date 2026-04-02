@@ -43,10 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(newUser);
     localStorage.setItem("auth_token", newToken);
     localStorage.setItem("auth_user", JSON.stringify(newUser));
-    
+
     // As explicitly requested: always go to dashboard first
     localStorage.removeItem("auth_redirect");
-    router.push("/dashboard");
+    router.push("/mentor-upload");
   };
 
   const logout = () => {
