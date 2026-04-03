@@ -23,7 +23,7 @@ const criteria = [
     { id: "futureScope", label: "Future Scope", max: 10 },
 ];
 
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+// import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export default function UploadMarksForm() {
     const [scores, setScores] = useState<Record<string, number>>({
@@ -47,16 +47,10 @@ export default function UploadMarksForm() {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem("auth_token"); // Assuming token is stored here
-            if (!token) {
-                throw new Error("You must be logged in to upload marks.");
-            }
-
             const response = await fetch("/api/mentor-online", {
                 method: "POST",
                 headers: { 
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}` 
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     teamName,
@@ -91,7 +85,7 @@ export default function UploadMarksForm() {
 
     if (submitted) {
         return (
-            <ProtectedRoute>
+            // <ProtectedRoute>
                 <Card>
                     <CardContent className="flex flex-col items-center justify-center py-16 gap-4">
                         <CheckCircle2 className="h-12 w-12 text-green-500" />
@@ -102,12 +96,12 @@ export default function UploadMarksForm() {
                         </Button>
                     </CardContent>
                 </Card>
-            </ProtectedRoute>
+            // </ProtectedRoute>
         );
     }
 
     return (
-        <ProtectedRoute>
+        // <ProtectedRoute>
             <Card>
                 <CardHeader>
                     <CardTitle>Score Entry Form</CardTitle>
@@ -215,6 +209,6 @@ export default function UploadMarksForm() {
                     </form>
                 </CardContent>
             </Card>
-        </ProtectedRoute>
+        // </ProtectedRoute>
     );
 }
