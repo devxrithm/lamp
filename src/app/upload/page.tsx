@@ -24,7 +24,7 @@ const criteria = [
     { id: "futureScope", label: "Future Scope", max: 10 },
 ];
 
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+// import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export default function UploadMarksForm() {
     const [scores, setScores] = useState<Record<string, number>>({
@@ -65,9 +65,9 @@ export default function UploadMarksForm() {
 
             const response = await fetch("/api/jury", {
                 method: "POST",
-                headers: { 
+                headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}` 
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     teamId,
@@ -104,149 +104,148 @@ export default function UploadMarksForm() {
 
     if (submitted) {
         return (
-            <ProtectedRoute>
-                <Card>
-                    <CardContent className="flex flex-col items-center justify-center py-16 gap-4">
-                        <CheckCircle2 className="h-12 w-12 text-green-500" />
-                        <p className="text-lg font-semibold">Marks Submitted!</p>
-                        <p className="text-sm text-muted-foreground">Scores have been saved successfully.</p>
-                        <Button variant="outline" onClick={() => setSubmitted(false)}>
-                            Submit Another
-                        </Button>
-                    </CardContent>
-                </Card>
-            </ProtectedRoute>
+            <Card>
+                <CardContent className="flex flex-col items-center justify-center py-16 gap-4">
+                    <CheckCircle2 className="h-12 w-12 text-green-500" />
+                    <p className="text-lg font-semibold">Marks Submitted!</p>
+                    <p className="text-sm text-muted-foreground">Scores have been saved successfully.</p>
+                    <Button variant="outline" onClick={() => setSubmitted(false)}>
+                        Submit Another
+                    </Button>
+                </CardContent>
+            </Card>
+
         );
     }
 
     return (
-        <ProtectedRoute>
-        {/* <TopBar/> */}
-        <Card>
-            <CardHeader>
-                <CardTitle>Score Entry Form</CardTitle>
-                <CardDescription>
-                    Fill in scores for each judging criterion. Total is out of 50.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {error && (
-                        <Alert variant="destructive" className="py-2.5">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription className="ml-2 text-sm">{error}</AlertDescription>
-                        </Alert>
-                    )}
-                    {/* Team selection */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="team">Team</Label>
-                            <Select required value={teamName} onValueChange={setTeamName}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select team" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="neuralninjas">NeuralNinjas</SelectItem>
-                                    <SelectItem value="bytebuilders">ByteBuilders</SelectItem>
-                                    <SelectItem value="finfusion">FinFusion</SelectItem>
-                                    <SelectItem value="healthhackers">HealthHackers</SelectItem>
-                                    <SelectItem value="blockforce">BlockForce</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="round">Round</Label>
-                            <Select value={round} onValueChange={setRound}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select round" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="prelim">Preliminary</SelectItem>
-                                    <SelectItem value="semi">Semi-Final</SelectItem>
-                                    <SelectItem value="final">Final</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    {/* Criteria input boxes */}
-                    <div className="space-y-4">
-                        <Label>Scoring Criteria</Label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {criteria.map((c) => {
-                                const val = scores[c.id];
-                                const isOver = val > c.max;
-                                return (
-                                    <div key={c.id} className="space-y-1.5">
-                                        <div className="flex items-center justify-between">
-                                            <Label htmlFor={c.id} className="text-sm font-normal text-muted-foreground">
-                                                {c.label}
-                                            </Label>
-                                            <span className="text-xs text-muted-foreground">max {c.max}</span>
-                                        </div>
-                                        <div className="relative">
-                                            <Input
-                                                id={c.id}
-                                                type="number"
-                                                min={0}
-                                                max={c.max}
-                                                required
-                                                value={val}
-                                                onChange={(e) => {
-                                                    const num = Math.max(0, Math.min(c.max, Number(e.target.value)));
-                                                    setScores((prev) => ({ ...prev, [c.id]: num }));
-                                                }}
-                                                className={`pr-14 tabular-nums ${isOver ? "border-destructive focus-visible:ring-destructive" : ""}`}
-                                            />
-                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                                                / {c.max}
-                                            </span>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* Total */}
-                    <div className="flex items-center justify-between rounded-lg bg-muted px-4 py-3">
-                        <span className="font-semibold text-sm">Total Score</span>
-                        <span
-                            className={`text-2xl font-bold tabular-nums ${total >= 30
-                                    ? "text-green-600"
-                                    :  "text-yellow-600"
-                                }`}
-                        >
-                            {total} / 50
-                        </span>
-                    </div>
-
-                    {/* Feedback */}
-                    <div className="space-y-2">
-                        <Label htmlFor="feedback">Judge Feedback (optional)</Label>
-                        <Textarea
-                            id="feedback"
-                            placeholder="Add notes or feedback for this team..."
-                            className="resize-none"
-                            rows={3}
-                            value={feedback}
-                            onChange={(e) => setFeedback(e.target.value)}
-                        />
-                    </div>
-
-                    <Button type="submit" className="w-full" disabled={loading}>
-                        {loading ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Submitting...
-                            </>
-                        ) : (
-                            "Submit Marks"
+        <div>
+            {/* <TopBar/> */}
+            < Card >
+                <CardHeader>
+                    <CardTitle>Score Entry Form</CardTitle>
+                    <CardDescription>
+                        Fill in scores for each judging criterion. Total is out of 50.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        {error && (
+                            <Alert variant="destructive" className="py-2.5">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertDescription className="ml-2 text-sm">{error}</AlertDescription>
+                            </Alert>
                         )}
-                    </Button>
-                </form>
-            </CardContent>
-        </Card>
-        </ProtectedRoute>
+                        {/* Team selection */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="team">Team</Label>
+                                <Select required value={teamName} onValueChange={setTeamName}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select team" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="neuralninjas">NeuralNinjas</SelectItem>
+                                        <SelectItem value="bytebuilders">ByteBuilders</SelectItem>
+                                        <SelectItem value="finfusion">FinFusion</SelectItem>
+                                        <SelectItem value="healthhackers">HealthHackers</SelectItem>
+                                        <SelectItem value="blockforce">BlockForce</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="round">Round</Label>
+                                <Select value={round} onValueChange={setRound}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select round" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="prelim">Preliminary</SelectItem>
+                                        <SelectItem value="semi">Semi-Final</SelectItem>
+                                        <SelectItem value="final">Final</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        {/* Criteria input boxes */}
+                        <div className="space-y-4">
+                            <Label>Scoring Criteria</Label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {criteria.map((c) => {
+                                    const val = scores[c.id];
+                                    const isOver = val > c.max;
+                                    return (
+                                        <div key={c.id} className="space-y-1.5">
+                                            <div className="flex items-center justify-between">
+                                                <Label htmlFor={c.id} className="text-sm font-normal text-muted-foreground">
+                                                    {c.label}
+                                                </Label>
+                                                <span className="text-xs text-muted-foreground">max {c.max}</span>
+                                            </div>
+                                            <div className="relative">
+                                                <Input
+                                                    id={c.id}
+                                                    type="number"
+                                                    min={0}
+                                                    max={c.max}
+                                                    required
+                                                    value={val}
+                                                    onChange={(e) => {
+                                                        const num = Math.max(0, Math.min(c.max, Number(e.target.value)));
+                                                        setScores((prev) => ({ ...prev, [c.id]: num }));
+                                                    }}
+                                                    className={`pr-14 tabular-nums ${isOver ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                                                />
+                                                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+                                                    / {c.max}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        {/* Total */}
+                        <div className="flex items-center justify-between rounded-lg bg-muted px-4 py-3">
+                            <span className="font-semibold text-sm">Total Score</span>
+                            <span
+                                className={`text-2xl font-bold tabular-nums ${total >= 30
+                                    ? "text-green-600"
+                                    : "text-yellow-600"
+                                    }`}
+                            >
+                                {total} / 50
+                            </span>
+                        </div>
+
+                        {/* Feedback */}
+                        <div className="space-y-2">
+                            <Label htmlFor="feedback">Judge Feedback (optional)</Label>
+                            <Textarea
+                                id="feedback"
+                                placeholder="Add notes or feedback for this team..."
+                                className="resize-none"
+                                rows={3}
+                                value={feedback}
+                                onChange={(e) => setFeedback(e.target.value)}
+                            />
+                        </div>
+
+                        <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Submitting...
+                                </>
+                            ) : (
+                                "Submit Marks"
+                            )}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card >
+        </div>
     );
 }
