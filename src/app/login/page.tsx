@@ -25,7 +25,10 @@ export default function Login() {
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer`
+        },
         body: JSON.stringify({ email, password }),
       });
 
@@ -61,7 +64,7 @@ export default function Login() {
                 <AlertDescription className="ml-2 text-sm">{error}</AlertDescription>
               </Alert>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -75,7 +78,7 @@ export default function Login() {
                 className="bg-background"
               />
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
@@ -90,7 +93,7 @@ export default function Login() {
                 className="bg-background"
               />
             </div>
-            
+
             <Button type="submit" className="w-full mt-2" disabled={loading}>
               {loading ? (
                 <>
