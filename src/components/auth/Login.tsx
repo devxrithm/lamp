@@ -28,7 +28,7 @@ const Login = () => {
     setLoading(true);
     try {
       await api.post("/api/auth/login", { email, password });
-      router.push("/in/spot/btcusdt");
+      router.push("/");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(
