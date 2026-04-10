@@ -138,13 +138,13 @@ export default function UploadMarksForm() {
           )}
           <div className="space-y-2">
             <Label htmlFor="round">Round</Label>
-            <Select value={round} onValueChange={setRound}>
+            <Select value={round} onValueChange={setRound} defaultValue="Round 1">
               <SelectTrigger>
                 <SelectValue placeholder="Select round" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Round 1</SelectItem>
-                <SelectItem value="2">Round 2</SelectItem>
+                <SelectItem value="Round 1">Round 1</SelectItem>
+                <SelectItem value="Round 2">Round 2</SelectItem>
               </SelectContent>
             </Select>
           </div>
