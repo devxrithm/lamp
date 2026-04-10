@@ -1,20 +1,16 @@
 "use client";
 
-import { api } from "@/src/lib/axios";
-import { logout } from "@/src/context/features/authSlice";
-import { useDispatch } from "react-redux";
+import { api } from "../../lib/axios";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useState } from "react";
 
 const Logout = () => {
   const [error, setError] = useState<string>("");
-  const dispatch = useDispatch();
   const router = useRouter();
 
   const LogoutHandler = async () => {
     try {
-      dispatch(logout());
       await api.post(
         "/api/auth/logout",
         {},

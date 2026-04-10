@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { api } from "@/src/lib/axios";
+import { api } from "../../lib/axios";
 import { IoMdLogIn } from "react-icons/io";
 import { CiLogin } from "react-icons/ci";
 import { RiLoader2Fill } from "react-icons/ri";
