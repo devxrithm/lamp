@@ -43,7 +43,7 @@ export default function UploadMarksForm() {
   });
 
   const [teamName, setTeamName] = useState("");
-  const [round, setRound] = useState("1");
+  const [round, setRound] = useState("Round 1");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
