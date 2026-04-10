@@ -43,6 +43,7 @@ export default function UploadMarksForm() {
   });
 
   const [teamName, setTeamName] = useState("");
+  const [round, setRound] = useState("1");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -54,16 +55,24 @@ export default function UploadMarksForm() {
     setError("");
     setLoading(true);
 
+    if (!teamName.trim()) {
+      setError("Please enter a team name.");
+      setLoading(false);
+      return;
+    }
+
     try {
       await api.post("/api/mentor-offline", {
-          teamName,
-          ...scores,
+        teamName,
+        round: round === "Round 1" ? 1 : 2,
+        ...scores,
       });
 
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
         setTeamName("");
+        setRound("1");
         setScores({
           innovationMarks: 0,
           technicalComplexity: 0,
@@ -129,15 +138,18 @@ export default function UploadMarksForm() {
           )}
           <div className="space-y-2">
             <Label htmlFor="round">Round</Label>
-            <Select defaultValue="online">
+            <Select value={round} onValueChange={setRound}>
               <SelectTrigger>
-                <SelectValue placeholder="Online Round" />
+                <SelectValue placeholder="Select round" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="online">Online Round</SelectItem>
+                <SelectItem value="1">Round 1</SelectItem>
+                <SelectItem value="2">Round 2</SelectItem>
               </SelectContent>
             </Select>
           </div>
+
+
           {/* Team selection */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
