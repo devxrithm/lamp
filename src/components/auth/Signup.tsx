@@ -29,7 +29,7 @@ const Signup = () => {
     setLoading(true);
     try {
       await api.post("/api/auth/signup", { email, password, fullName });
-      router.push("/in/spot/btcusdt");
+      router.push("/auth/login");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(
