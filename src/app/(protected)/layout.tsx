@@ -21,7 +21,7 @@ export default function ProtectedLayout({
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          router.push("/in/auth/login");
+          router.push("/auth/login");
           setError(
             error.response?.data?.message || "Login failed. Please try again.",
           );
