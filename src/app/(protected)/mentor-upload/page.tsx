@@ -133,14 +133,14 @@ export default function UploadMarksForm() {
             <Label htmlFor="round">Round</Label>
             <Select
               value={round}
-              onValueChange={(val) => setRound(val as "1" | "2")} // ✅ value is now "1" or "2"
+              onValueChange={(val) => setRound(val as "1" | "2")} 
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select round" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Round 1</SelectItem> {/* ✅ value="1" */}
-                <SelectItem value="2">Round 2</SelectItem> {/* ✅ value="2" */}
+                <SelectItem value="1">Round 1</SelectItem> 
+                <SelectItem value="2">Round 2</SelectItem> 
               </SelectContent>
             </Select>
           </div>

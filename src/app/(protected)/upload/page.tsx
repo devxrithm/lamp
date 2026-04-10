@@ -43,7 +43,7 @@ export default function UploadMarksForm() {
     futureScope: 0,
   });
   const [teamName, setTeamName] = useState("");
-  const [round, setRound] = useState("final");
+  const [round, setRound] = useState("Grand Finale.");
   const [feedback, setFeedback] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -163,9 +163,7 @@ export default function UploadMarksForm() {
                     <SelectValue placeholder="Select round" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="prelim">Preliminary</SelectItem>
-                    <SelectItem value="semi">Semi-Final</SelectItem>
-                    <SelectItem value="final">Final</SelectItem>
+                    <SelectItem value="Grand Finale">Grand Finale</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -1,11 +1,10 @@
 import Image from "next/image";
-import { Users, Upload, ArrowRight, Scan } from "lucide-react";
+import { Upload, ArrowRight, Scan } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#050a0e] text-white overflow-hidden relative">
-
       {/* Ambient background effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-[#00ffee08] blur-[120px]" />
@@ -34,7 +33,9 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <div className="w-px h-8 bg-white/20" />
-            <span className="text-white/30 text-xl font-thin tracking-[0.3em]">×</span>
+            <span className="text-white/30 text-xl font-thin tracking-[0.3em]">
+              ×
+            </span>
             <div className="w-px h-8 bg-white/20" />
           </div>
 
@@ -52,9 +53,7 @@ export default function Home() {
         <h1 className="text-7xl lg:text-9xl font-bold  leading-[0.75]">
           MIND INSTALLERS HACKATHON{" "}
           <span className="relative inline-block">
-            <span className="text-red-500">
-              4.0
-            </span>
+            <span className="text-red-500">4.0</span>
           </span>
         </h1>
         <p className="mt-4 text-white/40 text-lg max-w-xl leading-relaxed">
@@ -64,15 +63,19 @@ export default function Home() {
 
       <main className="relative z-10 px-8 lg:px-16 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
-          <Link href={'/scanner'}>
-            <button className="group relative text-left rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 overflow-hidden
-            hover:border-[#00ffee44] hover:bg-[#00ffee06] transition-all duration-300 cursor-pointer">
-
+          <Link href={"/scanner"}>
+            <button
+              className="group relative text-left rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 overflow-hidden
+            hover:border-[#00ffee44] hover:bg-[#00ffee06] transition-all duration-300 cursor-pointer"
+            >
               {/* Corner accent */}
-              <div className="absolute top-0 right-0 w-24 h-24 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              <div
+                className="absolute top-0 right-0 w-24 h-24 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 style={{
-                  background: "radial-gradient(circle at top right, #00ffee18, transparent 70%)",
-                }} />
+                  background:
+                    "radial-gradient(circle at top right, #00ffee18, transparent 70%)",
+                }}
+              />
 
               <div className="flex items-start justify-between mb-6">
                 <div className="p-3 rounded-xl bg-[#00ffee12] border border-[#00ffee22]">
@@ -91,15 +94,18 @@ export default function Home() {
               </p>
             </button>
           </Link>
-
-          <Link href={'/mentor-upload'}>
-            <button className="group relative text-left rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 overflow-hidden
-            hover:border-[#00ff8844] hover:bg-[#00ff8806] transition-all duration-300 cursor-pointer">
-
-              <div className="absolute top-0 right-0 w-24 h-24 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          <Link href={"/mentor-upload"}>
+            <button
+              className="group relative text-left rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 overflow-hidden
+            hover:border-[#00ff8844] hover:bg-[#00ff8806] transition-all duration-300 cursor-pointer"
+            >
+              <div
+                className="absolute top-0 right-0 w-24 h-24 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 style={{
-                  background: "radial-gradient(circle at top right, #00ff8818, transparent 70%)",
-                }} />
+                  background:
+                    "radial-gradient(circle at top right, #00ff8818, transparent 70%)",
+                }}
+              />
 
               <div className="flex items-start justify-between mb-6">
                 <div className="p-3 rounded-xl bg-[#00ff8812] border border-[#00ff8822]">
@@ -119,14 +125,19 @@ export default function Home() {
               </p>
             </button>
           </Link>
-          {/* <Link href={'/upload'}>
-            <button className="group relative text-left rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 overflow-hidden
-            hover:border-[#00ff8844] hover:bg-[#00ff8806] transition-all duration-300 cursor-pointer">
-
-              <div className="absolute top-0 right-0 w-24 h-24 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          {/* *******************jury upload******************** */}
+          <Link href={"/upload"}>
+            <button
+              className="group relative text-left rounded-2xl border border-white/[0.08] bg-white/[0.03] p-8 overflow-hidden
+            hover:border-[#00ff8844] hover:bg-[#00ff8806] transition-all duration-300 cursor-pointer"
+            >
+              <div
+                className="absolute top-0 right-0 w-24 h-24 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 style={{
-                  background: "radial-gradient(circle at top right, #00ff8818, transparent 70%)",
-                }} />
+                  background:
+                    "radial-gradient(circle at top right, #00ff8818, transparent 70%)",
+                }}
+              />
 
               <div className="flex items-start justify-between mb-6">
                 <div className="p-3 rounded-xl bg-[#00ff8812] border border-[#00ff8822]">
@@ -139,16 +150,15 @@ export default function Home() {
               </div>
 
               <h2 className="text-xl font-semibold mb-2 group-hover:text-[#00ff88] transition-colors duration-300">
-                Upload Marks
+                Upload Marks For Jury
               </h2>
               <p className="text-sm text-white/40 leading-relaxed">
                 Submit and manage participant assessment data securely.
               </p>
             </button>
-          </Link> */}
+          </Link>
         </div>
       </main>
-
 
       <footer className="relative z-10 px-8 lg:px-16 py-6 mt-8 border-t border-white/[0.04]">
         <p className="text-white/20 text-xs tracking-widest font-bold">
