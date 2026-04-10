@@ -31,24 +31,30 @@ const criteria = [
   { id: "futureScope", label: "Future Scope", max: 10 },
 ];
 
-// import { ProtectedRoute } from "@/components/ProtectedRoute";
+const defaultScores = {
+  innovationMarks: 0,
+  technicalComplexity: 0,
+  presentation: 0,
+  marketFeasibility: 0,
+  futureScope: 0,
+};
 
 export default function UploadMarksForm() {
-  const [scores, setScores] = useState<Record<string, number>>({
-    innovationMarks: 0,
-    technicalComplexity: 0,
-    presentation: 0,
-    marketFeasibility: 0,
-    futureScope: 0,
-  });
-
+  const [scores, setScores] = useState<Record<string, number>>(defaultScores);
   const [teamName, setTeamName] = useState("");
-  const [round, setRound] = useState("Round 1");
+  const [round, setRound] = useState<"1" | "2">("1"); // ✅ store as "1" or "2"
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const total = Object.values(scores).reduce((a, b) => a + b, 0);
+
+  const resetForm = () => {
+    setSubmitted(false);
+    setTeamName("");
+    setRound("1"); // ✅ consistent reset
+    setScores(defaultScores);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,23 +70,12 @@ export default function UploadMarksForm() {
     try {
       await api.post("/api/mentor-offline", {
         teamName,
-        round: round === "Round 1" ? 1 : 2,
+        round: Number(round), // ✅ cleanly converts "1" → 1, "2" → 2
         ...scores,
       });
 
       setSubmitted(true);
-      setTimeout(() => {
-        setSubmitted(false);
-        setTeamName("");
-        setRound("1");
-        setScores({
-          innovationMarks: 0,
-          technicalComplexity: 0,
-          presentation: 0,
-          marketFeasibility: 0,
-          futureScope: 0,
-        });
-      }, 3000);
+      setTimeout(resetForm, 3000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(
@@ -100,7 +95,6 @@ export default function UploadMarksForm() {
 
   if (submitted) {
     return (
-      // <ProtectedRoute>
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-16 gap-4">
           <CheckCircle2 className="h-12 w-12 text-green-500" />
@@ -108,17 +102,15 @@ export default function UploadMarksForm() {
           <p className="text-sm text-muted-foreground">
             Scores have been saved successfully.
           </p>
-          <Button variant="outline" onClick={() => setSubmitted(false)}>
+          <Button variant="outline" onClick={resetForm}>
             Submit Another
           </Button>
         </CardContent>
       </Card>
-      // </ProtectedRoute>
     );
   }
 
   return (
-    // <ProtectedRoute>
     <Card>
       <CardHeader>
         <CardTitle>Score Entry Form</CardTitle>
@@ -136,37 +128,36 @@ export default function UploadMarksForm() {
               </AlertDescription>
             </Alert>
           )}
+
           <div className="space-y-2">
             <Label htmlFor="round">Round</Label>
-            <Select value={round} onValueChange={setRound} defaultValue="Round 1">
+            <Select
+              value={round}
+              onValueChange={(val) => setRound(val as "1" | "2")} // ✅ value is now "1" or "2"
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select round" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Round 1">Round 1</SelectItem>
-                <SelectItem value="Round 2">Round 2</SelectItem>
+                <SelectItem value="1">Round 1</SelectItem> {/* ✅ value="1" */}
+                <SelectItem value="2">Round 2</SelectItem> {/* ✅ value="2" */}
               </SelectContent>
             </Select>
           </div>
 
-
-          {/* Team selection */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="team">Team</Label>
               <Input
                 type="text"
                 value={teamName}
-                onChange={(e) => {
-                  setTeamName(e.target.value);
-                }}
+                onChange={(e) => setTeamName(e.target.value)}
                 placeholder="Enter Team Name"
                 required
               />
             </div>
           </div>
 
-          {/* Criteria input boxes */}
           <div className="space-y-4">
             <Label>Scoring Criteria</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -213,7 +204,6 @@ export default function UploadMarksForm() {
             </div>
           </div>
 
-          {/* Total */}
           <div className="flex items-center justify-between rounded-lg bg-muted px-4 py-3">
             <span className="font-semibold text-sm">Total Score</span>
             <span
@@ -238,6 +228,5 @@ export default function UploadMarksForm() {
         </form>
       </CardContent>
     </Card>
-    // </ProtectedRoute>
   );
 }
