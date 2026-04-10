@@ -17,7 +17,7 @@ export default function ProtectedLayout({
       try {
         const res = await api.post("/api/auth/verify-token");
         if (res.data.statusCode === 200) {
-          router.push("/mentor-upload");
+          router.push("/");
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
