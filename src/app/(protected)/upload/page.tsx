@@ -23,6 +23,7 @@ import {
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { api } from "../../../lib/axios";
+import teamData from "../../../team.json";
 
 const criteria = [
   { id: "innovationMarks", label: "Innovation Marks", max: 10 },
@@ -32,6 +33,44 @@ const criteria = [
   { id: "futureScope", label: "Future Scope", max: 10 },
 ];
 
+// const team = [
+// Team Name,
+// The Brain Smiths ,
+// Bug slayers ,
+// BlockNexus,
+// Curious Coders,
+// Neural Ninjas,
+// BIT MANIPULATORS ,
+// MOGGERS ,
+// TeamX,
+// Devhubs,
+// Debug Duo,
+// Lifeline innovators,
+// Enceladus,
+// Rising Radiance,
+// HAWC,
+// TechnoHub,
+// Curatix ,
+// SYNTAX,
+// Lowgang ,
+// Fourmidables ,
+// Bugged Bhature,
+// SyncSquad,
+// Agentic Tech Sharks,
+// Void Walkers,
+// Built2Heal,
+// Bellatrix,
+// ROGUE BITS,
+// Syntrix,
+// Team Fusion,
+// Team SPG,
+// Parakram,
+// Shadow Coders,
+// KHOJ,
+// Cyprus,
+// ArchAI,
+// VitalScan,
+// ]
 // import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export default function UploadMarksForm() {
@@ -148,11 +187,22 @@ export default function UploadMarksForm() {
                     <SelectValue placeholder="Select team" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="neuralninjas">NeuralNinjas</SelectItem>
+                    {teamData.map((team, index) => {
+                      const teamName = team["Team Name"];
+                      return (
+                        <SelectItem
+                          key={`${teamName}-${index}`}
+                          value={teamName}
+                        >
+                          {teamName}
+                        </SelectItem>
+                      );
+                    })}
+                    {/* <SelectItem value="neuralninjas">NeuralNinjas</SelectItem>
                     <SelectItem value="bytebuilders">ByteBuilders</SelectItem>
                     <SelectItem value="finfusion">FinFusion</SelectItem>
                     <SelectItem value="healthhackers">HealthHackers</SelectItem>
-                    <SelectItem value="blockforce">BlockForce</SelectItem>
+                    <SelectItem value="blockforce">BlockForce</SelectItem> */}
                   </SelectContent>
                 </Select>
               </div>
