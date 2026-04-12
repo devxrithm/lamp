@@ -149,16 +149,21 @@ export default function UploadMarksForm() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="team">Team</Label>
-              <SelectContent>
-                {teamData.map((team, index) => {
-                  const teamName = team["Team Name"];
-                  return (
-                    <SelectItem key={`${teamName}-${index}`} value={teamName}>
-                      {teamName}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
+              <Select required value={teamName} onValueChange={setTeamName}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select team" />
+                </SelectTrigger>
+                <SelectContent>
+                  {teamData.map((team, index) => {
+                    const teamName = team["Team Name"];
+                    return (
+                      <SelectItem key={`${teamName}-${index}`} value={teamName}>
+                        {teamName}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
