@@ -22,6 +22,7 @@ import {
 import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { api } from "../../../lib/axios";
+import teamData from "../../../team.json";
 
 const criteria = [
   { id: "innovationMarks", label: "Innovation Marks", max: 10 },
@@ -133,14 +134,14 @@ export default function UploadMarksForm() {
             <Label htmlFor="round">Round</Label>
             <Select
               value={round}
-              onValueChange={(val) => setRound(val as "1" | "2")} 
+              onValueChange={(val) => setRound(val as "1" | "2")}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select round" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Round 1</SelectItem> 
-                <SelectItem value="2">Round 2</SelectItem> 
+                <SelectItem value="1">Round 1</SelectItem>
+                <SelectItem value="2">Round 2</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -148,13 +149,16 @@ export default function UploadMarksForm() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="team">Team</Label>
-              <Input
-                type="text"
-                value={teamName}
-                onChange={(e) => setTeamName(e.target.value)}
-                placeholder="Enter Team Name"
-                required
-              />
+              <SelectContent>
+                {teamData.map((team, index) => {
+                  const teamName = team["Team Name"];
+                  return (
+                    <SelectItem key={`${teamName}-${index}`} value={teamName}>
+                      {teamName}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
             </div>
           </div>
 
