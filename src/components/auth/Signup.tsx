@@ -28,7 +28,7 @@ const Signup = () => {
     setError("");
     setLoading(true);
     try {
-      await api.post("/api/auth/signup", { email, password, fullName });
+      await api.post("/signup", { email, password, fullName });
       router.push("/auth/login");
     } catch (error) {
       if (axios.isAxiosError(error)) {
