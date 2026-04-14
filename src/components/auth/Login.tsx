@@ -78,12 +78,7 @@ const Login = () => {
               <label className="text-xs font-medium text-slate-400">
                 Password
               </label>
-              <Link
-                href="/in/auth/forgot-password"
-                className="text-xs transition-colors text-slate-500"
-              >
-                Forgot password?
-              </Link>
+          
             </div>
             <div className="flex items-center gap-2.5 rounded-md px-3 py-2.5 transition-colors bg-slate-900 border border-slate-800">
               <MdOutlinePassword />
@@ -131,7 +126,7 @@ const Login = () => {
           <div className="flex-1 h-px bg-slate-800" />
         </div>
 
-        <p className="text-center text-xs text-slate-500">
+        {/* <p className="text-center text-xs text-slate-500">
           Don&apos;t have an account?{" "}
           <Link
             href="/in/auth/signup"
@@ -139,7 +134,7 @@ const Login = () => {
           >
             Register now
           </Link>
-        </p>
+        </p> */}
       </div>
     </div>
   );
